@@ -17,8 +17,6 @@ jobs:
           node-version: 20
           cache: "npm"
       - run: npm ci
-      # - run: npx -y tsx cli/download.mts
-      - run: mkdir generated && echo "foo" >> generated/bar.txt
       - run: mkdir plugins && cp -r generated/* plugins/ && cp -r config/* plugins/
       - run: tar cfz plugins-${{ github.ref_name }}.tgz plugins/
       - id: create_release
