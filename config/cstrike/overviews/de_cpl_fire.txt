@@ -1,0 +1,14 @@
+// overview description file for de_cpl_fire.bsp
+
+global 
+{
+	ZOOM	1.43
+	ORIGIN	616 	-352	-257
+	ROTATED	1
+}
+
+layer 
+{
+	IMAGE	"overviews/de_cpl_fire.bmp"
+	HEIGHT	-257
+}

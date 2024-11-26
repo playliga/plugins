@@ -1,0 +1,14 @@
+// overview description file for de_czl_freight.bsp
+
+global 
+{
+	ZOOM	1.73
+	ORIGIN	384	  -896     128
+	ROTATED	0
+}
+
+layer 
+{
+	IMAGE	"overviews/de_czl_freight.bmp"
+	HEIGHT	128
+}

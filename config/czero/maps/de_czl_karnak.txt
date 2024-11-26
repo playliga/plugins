@@ -1,0 +1,16 @@
+czl_karnak - Defusion
+by Colin "Brute" Volrath 
+http://www.brutesmaps.com
+Thanks to CAL-CZ
+
+Counter-Terrorists: Prevent the Terrorists from
+destroying two important excavation sites.
+Team members must defuse any bombs that
+threaten targeted areas.
+
+Terrorists: Destory the excavation sites.
+
+Other Notes: There are 2 targets 
+in this mission.
+
+(Press FIRE to continue)

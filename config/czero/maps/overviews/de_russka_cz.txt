@@ -1,0 +1,14 @@
+// overview description file for de_russka_cz.bsp
+
+global 
+{
+	ZOOM	1.48
+	ORIGIN	88	-272	  -97
+	ROTATED	1
+}
+
+layer 
+{
+	IMAGE	"overviews/de_russka_cz.bmp"
+	HEIGHT	-97
+}

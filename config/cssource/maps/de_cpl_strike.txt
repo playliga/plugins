@@ -1,0 +1,8 @@
+de_cpl_strike - Map by BubkeZ
+
+Ported By Ted "cashed" McIlwain
+
+Terrorists must destroy the highly explosive crates that lie in the bombsites.
+Counter-Terrorists must defend these crates at all costs.
+
+Have fun play hard go pro
