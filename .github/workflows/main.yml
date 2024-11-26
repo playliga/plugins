@@ -16,7 +16,7 @@ jobs:
         with:
           node-version: 20
           cache: "npm"
-      - uses: npm ci
+      - run: npm ci
       - run: npx -y tsx cli/download.mts
       - run: mkdir plugins && cp -r generated/* plugins/ && cp -r config/* plugins/
       - run: tar cvfz plugins-${{ github.ref_name }}.tgz plugins/
