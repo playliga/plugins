@@ -8,8 +8,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -25,5 +23,9 @@ jobs:
             --title "${{ github.ref_name }}" \
             --prerelease=false \
             --draft=false
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - if: success() && steps.create_release.outcome == 'success'
         run: gh release upload ${{ github.ref_name }} plugins-*.tgz --clobber
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
