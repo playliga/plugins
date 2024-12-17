@@ -37,6 +37,7 @@
 #define MENU_TEAM_SELECT_VGUI_T         26
 #define TEAM_T                          0
 #define TEAM_CT                         1
+#define TIMER_WELCOME_MESSAGE_ID        1337
 
 // cvars
 enum cvars {
@@ -168,7 +169,7 @@ public command_ready(id) {
   }
 
   // execute the config
-  remove_task(id);
+  remove_task(TIMER_WELCOME_MESSAGE_ID);
   server_cmd("competitive");
 
   // run the lo3 task
@@ -240,8 +241,9 @@ public event_end_round() {
   // handle half-time
   if(rounds_total == rounds_half_time) {
     say("HALFTIME");
-    say("TO START THE SECOND-HALF TYPE: .ready");
     set_task(float(DELAY_HALF_TIME), "task_half_time");
+    set_task(float(DELAY_WELCOME_MESSAGE), "task_welcome_message");
+    set_task(float(INTERVAL_WELCOME_MESSAGE), "task_welcome_message", TIMER_WELCOME_MESSAGE_ID, "", 0, "b");
     return PLUGIN_CONTINUE;
   }
 
@@ -255,6 +257,8 @@ public event_end_round() {
     say("TO START OVERTIME TYPE: .ready");
     g_over_time = true;
     set_task(float(DELAY_HALF_TIME), "task_half_time");
+    set_task(float(DELAY_WELCOME_MESSAGE), "task_welcome_message");
+    set_task(float(INTERVAL_WELCOME_MESSAGE), "task_welcome_message", TIMER_WELCOME_MESSAGE_ID, "", 0, "b");
     return PLUGIN_CONTINUE;
   }
 
@@ -285,7 +289,7 @@ public event_join_team() {
 
   g_welcomed = true;
   set_task(float(DELAY_WELCOME_MESSAGE), "task_welcome_message");
-  set_task(float(INTERVAL_WELCOME_MESSAGE), "task_welcome_message", id, "", 0, "b");
+  set_task(float(INTERVAL_WELCOME_MESSAGE), "task_welcome_message", TIMER_WELCOME_MESSAGE_ID, "", 0, "b");
   return PLUGIN_CONTINUE;
 }
 

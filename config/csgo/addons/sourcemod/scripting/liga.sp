@@ -236,8 +236,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
   // handle half-time
   if(roundsTotal == roundsHalfTime) {
     say("HALFTIME");
-    say("TO START THE SECOND-HALF TYPE: .ready");
     CreateTimer(float(DELAY_HALF_TIME), Timer_HalfTime);
+    CreateTimer(float(DELAY_WELCOME_MESSAGE), Timer_WelcomeMessage);
+    CreateTimer(float(INTERVAL_WELCOME_MESSAGE), Timer_WelcomeMessage, 0, TIMER_REPEAT);
     return Plugin_Continue;
   }
 
@@ -249,8 +250,9 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
   ) {
     overTime = true;
     say("OVERTIME");
-    say("TO START OVERTIME TYPE: .ready");
     CreateTimer(float(DELAY_HALF_TIME), Timer_HalfTime);
+    CreateTimer(float(DELAY_WELCOME_MESSAGE), Timer_WelcomeMessage);
+    CreateTimer(float(INTERVAL_WELCOME_MESSAGE), Timer_WelcomeMessage, 0, TIMER_REPEAT);
     return Plugin_Continue;
   }
 
