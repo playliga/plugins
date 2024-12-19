@@ -16,7 +16,6 @@ Additional game configuration files and maps are also provided by this repositor
 - Source Engine
   - [SourceMod](https://www.sourcemod.net/) `v1.11.0`
   - [Metamod Source](https://www.sourcemm.net/) `v1.11.0`
-  - [CSGOBetterBots](https://github.com/manicogaming/CSGOBetterBots)
 
 ## Getting Started
 
