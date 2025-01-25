@@ -95,7 +95,7 @@ public plugin_log() {
       return PLUGIN_HANDLED;
     }
 
-    log_amx("%s Half: ^"%d^"", g_buffer, g_half_time);
+    log_message("%s Half: ^"%d^"", g_buffer, g_half_time);
     return PLUGIN_HANDLED;
   }
 
@@ -361,7 +361,7 @@ public task_half_time() {
  */
 public task_game_over() {
   get_mapname(g_buffer_md, BUFFER_SIZE_MD);
-  log_amx("Game Over: competitive  %s score %d:%d", g_buffer_md, get_score(TEAM_T), get_score(TEAM_CT));
+  log_message("Game Over: competitive  %s score %d:%d", g_buffer_md, get_score(TEAM_T), get_score(TEAM_CT));
 
   // shut the server down
   server_cmd("exit");
