@@ -1,9 +1,11 @@
 name: Publish
 
 on:
-  push:
-    tags:
-      - v*
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   publish:
@@ -25,8 +27,8 @@ jobs:
       - run: cp -r ${{ env.CSGO_BETTER_BOTS }}/* config/csgo/
       - run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
       - run: mkdir $REPO_NAME && cp -r generated/* $REPO_NAME/ && cp -r config/* $REPO_NAME/
-      - run: zip -rq $REPO_NAME-${{ github.ref_name }}.zip $REPO_NAME/
+      - run: zip -rq $REPO_NAME-$(cat package.json | jq -r '.version').zip $REPO_NAME/
       - id: create_release
-        run: gh release create ${{ github.ref_name }} --title "${{ github.ref_name }}"
+        run: gh release create $(cat package.json | jq -r '.version') --title "$(cat package.json | jq -r '.version')"
       - if: success() && steps.create_release.outcome == 'success'
-        run: gh release upload ${{ github.ref_name }} $REPO_NAME-*.zip --clobber
+        run: gh release upload $(cat package.json | jq -r '.version') $REPO_NAME-*.zip --clobber
