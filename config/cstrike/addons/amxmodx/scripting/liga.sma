@@ -26,6 +26,7 @@
 #define BUFFER_SIZE_MAX                 2047
 #define MENU_TEAM_SELECT_CLASS_AUTO_ID  "6"
 #define MENU_TEAM_SELECT_TEAM_AUTO_ID   "5"
+#define MENU_TEAM_SELECT_TEAM_SPEC_ID   "6"
 #define MENU_TEAM_SELECT                "#Team_Select"
 #define MENU_TEAM_SELECT_CT             "#CT_Select"
 #define MENU_TEAM_SELECT_IG             "#IG_Team_Select"
@@ -44,6 +45,7 @@ enum cvars {
   DELAY_GAME_OVER,
   MAX_ROUNDS,
   OVERTIME_ENABLE,
+  SPECTATING,
   TEAM_NAME_T,
   TEAM_NAME_CT,
 }
@@ -74,6 +76,7 @@ public plugin_init() {
   g_cvars[DELAY_GAME_OVER] = register_cvar("liga_gameover_delay", "5");
   g_cvars[MAX_ROUNDS] = register_cvar("liga_max_rounds", "30");
   g_cvars[OVERTIME_ENABLE] = register_cvar("liga_overtime_enable", "0");
+  g_cvars[SPECTATING] = register_cvar("liga_spectating", "0");
   g_cvars[TEAM_NAME_T] = register_cvar("liga_teamname_t", "Terrorists");
   g_cvars[TEAM_NAME_CT] = register_cvar("liga_teamname_ct", "Counter-Terrorists");
 }
@@ -341,8 +344,12 @@ public message_force_team_vgui(msg_id, msg_dest, player_id) {
  * Assigns the player to their team.
  */
 public task_force_team(player_id) {
-  engclient_cmd(player_id, "jointeam", MENU_TEAM_SELECT_TEAM_AUTO_ID);
-  engclient_cmd(player_id, "joinclass", MENU_TEAM_SELECT_CLASS_AUTO_ID);
+  if(get_pcvar_num(g_cvars[SPECTATING])) {
+    engclient_cmd(player_id, "jointeam", MENU_TEAM_SELECT_TEAM_SPEC_ID);
+  } else {
+    engclient_cmd(player_id, "jointeam", MENU_TEAM_SELECT_TEAM_AUTO_ID);
+    engclient_cmd(player_id, "joinclass", MENU_TEAM_SELECT_CLASS_AUTO_ID);
+  }
 }
 
 /**
@@ -389,6 +396,9 @@ public task_lo3(num) {
  * @param id The index of the player to send the message to.
  */
 public task_welcome_message(id) {
+  if(get_pcvar_num(g_cvars[SPECTATING])) {
+    say("YOU ARE SPECTATING THIS MATCH.");
+  }
   say("TO START THE MATCH TYPE: .ready");
   say("TO SHOW THE MOTD AGAIN TYPE: .motd");
   say("ONCE LIVE TO CHECK THE SCORE TYPE: .score");

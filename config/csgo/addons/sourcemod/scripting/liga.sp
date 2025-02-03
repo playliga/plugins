@@ -29,6 +29,7 @@ enum Cvars {
   DELAY_GAME_OVER,
   MAX_ROUNDS,
   OVERTIME_ENABLE,
+  SPECTATING,
   TEAM_NAME_T,
   TEAM_NAME_CT,
 }
@@ -65,6 +66,7 @@ public Plugin myinfo = {
  */
 public void OnPluginStart() {
   cvars[DELAY_GAME_OVER] = CreateConVar("liga_gameover_delay", "5");
+  cvars[SPECTATING] = CreateConVar("liga_spectating", "0");
   gameEngine = GetEngineVersion();
 
   HookEvent("player_team", Event_JoinTeam);
@@ -445,6 +447,17 @@ public void OnMapStart() {
  * @param id The index of the player.
  */
 public Action Timer_ForceTeam(Handle timer, int id) {
+  if(cvars[SPECTATING].BoolValue) {
+    ClientCommand(id, "jointeam %d", 1);
+    return Plugin_Handled;
+  }
+
+  // let csgo handle auto-assigning
+  // if we're not spectating
+  if(gameEngine != Engine_CSS) {
+    return Plugin_Handled;
+  }
+
   ClientCommand(id, "jointeam %d", 0);
   ClientCommand(id, "joinclass %d", 0);
   return Plugin_Handled;
@@ -521,6 +534,10 @@ public Action Timer_WelcomeMessage(Handle timer, int id) {
     return Plugin_Stop;
   }
 
+  if(cvars[SPECTATING].BoolValue) {
+    say("YOU ARE SPECTATING THIS MATCH.");
+  }
+
   say("TO START THE MATCH TYPE: .ready");
 
   if(gameEngine == Engine_CSS) {
@@ -536,10 +553,6 @@ public Action Timer_WelcomeMessage(Handle timer, int id) {
  * @param id The index of the player.
  */
 void ForceTeamCheck(int id) {
-  if(gameEngine != Engine_CSS) {
-    return;
-  }
-
   CreateTimer(float(DELAY_FORCE_TEAM), Timer_ForceTeam, id, TIMER_FLAG_NO_MAPCHANGE);
 }
 
