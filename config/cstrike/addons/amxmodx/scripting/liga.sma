@@ -8,7 +8,7 @@
 
 // constants
 #define PLUGIN_NAME                     "LIGA Esports Manager"
-#define PLUGIN_VERSION                  "1.0.0"
+#define PLUGIN_VERSION                  "1.0.1"
 #define PLUGIN_AUTHOR                   "LIGA Esports Manager"
 #define DELAY_FORCE_TEAM                1
 #define DELAY_HALF_TIME                 1
@@ -259,6 +259,7 @@ public event_end_round() {
     say("OVERTIME");
     say("TO START OVERTIME TYPE: .ready");
     g_over_time = true;
+    g_over_time_score = {0,0};
     set_task(float(DELAY_HALF_TIME), "task_half_time");
     set_task(float(DELAY_WELCOME_MESSAGE), "task_welcome_message");
     set_task(float(INTERVAL_WELCOME_MESSAGE), "task_welcome_message", TIMER_WELCOME_MESSAGE_ID, "", 0, "b");
@@ -358,7 +359,7 @@ public task_force_team(player_id) {
  */
 public task_half_time() {
   g_live = false;
-  g_half_time = !g_over_time;
+  g_half_time = !g_half_time;
   server_cmd("exec liga-halftime.cfg");
 }
 
@@ -368,7 +369,7 @@ public task_half_time() {
  */
 public task_game_over() {
   get_mapname(g_buffer_md, BUFFER_SIZE_MD);
-  log_message("Game Over: competitive  %s score %d:%d", g_buffer_md, get_score(TEAM_T), get_score(TEAM_CT));
+  log_message("Game Over: competitive  %s score %d:%d", g_buffer_md, g_score[TEAM_T], g_score[TEAM_CT]);
 
   // shut the server down
   server_cmd("exit");
@@ -410,8 +411,8 @@ public task_welcome_message(id) {
  * @param prefix Whether to print a prefix.
  */
 client_print_score(prefix[] = "") {
-  new score_t = get_score(TEAM_T);
-  new score_ct = get_score(TEAM_CT);
+  new score_t = g_score[TEAM_T];
+  new score_ct = g_score[TEAM_CT];
 
   if(strlen(prefix) > 0) {
     say("%s | %s %d - %d %s", prefix, get_name(TEAM_NAME_T), score_t, score_ct, get_name(TEAM_NAME_CT));

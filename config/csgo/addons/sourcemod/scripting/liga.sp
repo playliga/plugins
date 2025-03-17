@@ -57,7 +57,7 @@ public Plugin myinfo = {
   name        = "LIGA Esports Manager",
   author      = "LIGA Esports Manager",
   description = "LIGA Esports Manager",
-  version     = "1.0.0",
+  version     = "1.0.1",
   url         = "https://lemonpole.github.io/liga-public/"
 }
 
@@ -251,6 +251,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
     scoreTs == scoreCTs
   ) {
     overTime = true;
+    scoreOverTime = {0,0};
     say("OVERTIME");
     CreateTimer(float(DELAY_HALF_TIME), Timer_HalfTime);
     CreateTimer(float(DELAY_WELCOME_MESSAGE), Timer_WelcomeMessage);
@@ -493,7 +494,7 @@ public Action Timer_LO3(Handle timer) {
  */
 public Action Timer_HalfTime(Handle timer) {
   live = false;
-  halfTime = !overTime;
+  halfTime = !halfTime;
   ServerCommand("exec liga-halftime.cfg");
   return Plugin_Continue;
 }
@@ -510,7 +511,7 @@ public Action Timer_GameOver(Handle timer) {
 
   if(gameEngine == Engine_CSS) {
     GetCurrentMap(buffer, BUFFER_SIZE_MAX);
-    LogToGame("Game Over: competitive  %s score %d:%d", buffer, getScore(TEAM_T), getScore(TEAM_CT));
+    LogToGame("Game Over: competitive  %s score %d:%d", buffer, score[TEAM_T], score[TEAM_CT]);
   }
 
   // shut the server down
@@ -604,8 +605,8 @@ public void say(const char[] message, any ...) {
 void sayScore(char[] prefix = "") {
   char nameTs[BUFFER_SIZE_MAX + 1];
   char nameCTs[BUFFER_SIZE_MAX + 1];
-  int score_t = getScore(TEAM_T);
-  int score_ct = getScore(TEAM_CT);
+  int score_t = score[TEAM_T];
+  int score_ct = score[TEAM_CT];
 
   cvars[TEAM_NAME_T].GetString(nameTs, BUFFER_SIZE_MAX);
   cvars[TEAM_NAME_CT].GetString(nameCTs, BUFFER_SIZE_MAX);
