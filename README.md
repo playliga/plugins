@@ -8,14 +8,14 @@ Additional game configuration files and maps are also provided by this repositor
 
 ## APIs and Technologies
 
-- Node `v20.18.x`
+- Node `v22.x`
 - GoldSrc Engine
   - [AMX Mod X](https://www.amxmodx.org/) `v1.8.2`
   - [Metamod](http://metamod.org/) `v1.21.1-am`
   - [ReGameDLL](https://github.com/rehlds/ReGameDLL_CS) `5.26.0.668`
 - Source Engine
-  - [SourceMod](https://www.sourcemod.net/) `v1.11.0`
-  - [Metamod Source](https://www.sourcemm.net/) `v1.11.0`
+  - [SourceMod](https://www.sourcemod.net/) `v1.12.0`
+  - [Metamod Source](https://www.sourcemm.net/) `v1.12.0`
 
 ## Getting Started
 
