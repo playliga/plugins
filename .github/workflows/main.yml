@@ -11,6 +11,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     env:
+      CS2_SHARP: cs2sharp
       CSGO_BETTER_BOTS: csgo-better-bots
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -23,8 +24,14 @@ jobs:
           gh release download
           --repo ${{ github.repository_owner }}/${{ env.CSGO_BETTER_BOTS }}
           --pattern '*.zip'
+      - run: >
+          gh release download
+          --repo ${{ github.repository_owner }}/${{ env.CS2_SHARP }}
+          --pattern '*.zip'
       - run: unzip -qq ${{ env.CSGO_BETTER_BOTS }}-*.zip
+      - run: unzip -qq ${{ env.CS2_SHARP }}-*.zip
       - run: cp -r ${{ env.CSGO_BETTER_BOTS }}/* config/csgo/
+      - run: cp -r ${{ env.CS2_SHARP }}/* config/cs2/
       - run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
       - run: mkdir $REPO_NAME && cp -r generated/* $REPO_NAME/ && cp -r config/* $REPO_NAME/
       - run: zip -rq $REPO_NAME-$(cat package.json | jq -r '.version').zip $REPO_NAME/
