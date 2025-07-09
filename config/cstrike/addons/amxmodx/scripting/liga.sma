@@ -8,7 +8,7 @@
 
 // constants
 #define PLUGIN_NAME                     "LIGA Esports Manager"
-#define PLUGIN_VERSION                  "1.0.1"
+#define PLUGIN_VERSION                  "1.0.2"
 #define PLUGIN_AUTHOR                   "LIGA Esports Manager"
 #define DELAY_FORCE_TEAM                1
 #define DELAY_HALF_TIME                 1
@@ -36,6 +36,7 @@
 #define MENU_TEAM_SELECT_VGUI           2
 #define MENU_TEAM_SELECT_VGUI_CT        27
 #define MENU_TEAM_SELECT_VGUI_T         26
+#define OVERTIME_MAX_ROUNDS             6
 #define TEAM_T                          0
 #define TEAM_CT                         1
 #define TIMER_WELCOME_MESSAGE_ID        1337
@@ -175,6 +176,10 @@ public command_ready(id) {
   remove_task(TIMER_WELCOME_MESSAGE_ID);
   server_cmd("competitive");
 
+  if(g_over_time) {
+    server_cmd("overtime");
+  }
+
   // run the lo3 task
   //
   // doing it this way because the standard lo3 config will
@@ -233,9 +238,10 @@ public event_end_round() {
   new score_ct = get_score(TEAM_CT);
 
   // grab round information
+  new rounds_max = g_over_time ? OVERTIME_MAX_ROUNDS : get_pcvar_num(g_cvars[MAX_ROUNDS]);
   new rounds_total = get_sum_of_array(g_over_time ? g_over_time_score : g_score, 2);
-  new rounds_half_time = get_pcvar_num(g_cvars[MAX_ROUNDS]) / 2;
-  new rounds_clinch = get_pcvar_num(g_cvars[MAX_ROUNDS]) / 2 + 1;
+  new rounds_half_time = rounds_max / 2;
+  new rounds_clinch = rounds_max / 2 + 1;
   new rounds_last = score_t == rounds_clinch - 1 || score_ct == rounds_clinch - 1;
 
   // report score
@@ -252,7 +258,7 @@ public event_end_round() {
 
   // handle overtime
   if(
-    rounds_total == get_pcvar_num(g_cvars[MAX_ROUNDS]) &&
+    rounds_total == rounds_max &&
     get_pcvar_num(g_cvars[OVERTIME_ENABLE]) &&
     score_t == score_ct
   ) {
@@ -268,7 +274,7 @@ public event_end_round() {
 
   // game is over
   if(
-    rounds_total == get_pcvar_num(g_cvars[MAX_ROUNDS]) ||
+    rounds_total == rounds_max ||
     score_t == rounds_clinch ||
     score_ct == rounds_clinch
   ) {

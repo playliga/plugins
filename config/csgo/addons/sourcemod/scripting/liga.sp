@@ -21,6 +21,7 @@ const int     LO3_PRINT_NUM                         = 4;
 char          MENU_TEAM_SELECT[]                    = "specgui";
 char          MENU_TEAM_SELECT_CT[]                 = "class_ct";
 char          MENU_TEAM_SELECT_T []                 = "class_ter";
+const int     OVERTIME_MAX_ROUNDS                   = 6;
 const int     TEAM_T                                = 0;
 const int     TEAM_CT                               = 1;
 
@@ -57,7 +58,7 @@ public Plugin myinfo = {
   name        = "LIGA Esports Manager",
   author      = "LIGA Esports Manager",
   description = "LIGA Esports Manager",
-  version     = "1.0.1",
+  version     = "1.0.2",
   url         = "https://lemonpole.github.io/liga-public/"
 }
 
@@ -175,8 +176,14 @@ public Action Command_ReadyUp(int id, int args) {
     return Plugin_Continue;
   }
 
+  // execute the configs
   ServerCommand("competitive");
   CreateTimer(float(INTERVAL_LO3), Timer_LO3, _, LO3_LOOP_NUM);
+
+  if(overTime) {
+    ServerCommand("overtime");
+  }
+
   return Plugin_Continue;
 }
 
@@ -227,9 +234,10 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
   int scoreCTs = getScore(TEAM_CT);
 
   // grab round information
+  int roundsMax = overTime ? OVERTIME_MAX_ROUNDS : cvars[MAX_ROUNDS].IntValue;
   int roundsTotal = getArraySum(overTime ? scoreOverTime : score, sizeof(score));
-  int roundsHalfTime = cvars[MAX_ROUNDS].IntValue / 2;
-  int roundsClinch = cvars[MAX_ROUNDS].IntValue / 2 + 1;
+  int roundsHalfTime = roundsMax / 2;
+  int roundsClinch = roundsMax / 2 + 1;
   bool roundsLast = scoreTs == roundsClinch - 1 || scoreCTs == roundsClinch - 1;
 
   // report score
@@ -246,7 +254,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 
   // handle overtime
   if(
-    roundsTotal == cvars[MAX_ROUNDS].IntValue &&
+    roundsTotal == roundsMax &&
     cvars[OVERTIME_ENABLE].BoolValue &&
     scoreTs == scoreCTs
   ) {
@@ -261,7 +269,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
 
   // game is over
   if(
-    roundsTotal == cvars[MAX_ROUNDS].IntValue ||
+    roundsTotal == roundsMax ||
     scoreTs == roundsClinch ||
     scoreCTs == roundsClinch
   ) {
