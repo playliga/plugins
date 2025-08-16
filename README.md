@@ -1,12 +1,12 @@
-# LIGA Esports Manager Plugins
+[![Discord](https://img.shields.io/discord/1296858234853789826?style=for-the-badge&label=Join%20the%20Discord%20Server&logo=discord&logoColor=white)](https://discord.gg/ZaEwHfDD5N)
 
-[![Discord](https://img.shields.io/discord/1296858234853789826?style=for-the-badge&label=Join%20the%20Discord%20Server&link=https%3A%2F%2Fdiscord.gg%2FZaEwHfDD5N)](https://discord.gg/ZaEwHfDD5N)
+[![Static Badge](https://img.shields.io/badge/download-latest-salmon?style=for-the-badge&logo=mingww64)](https://playliga.gg/#/#download)
 
 AMX Mod X and SourceMod Plugins for LIGA Esports Manager.
 
 Additional game configuration files and maps are also provided by this repository.
 
-## APIs and Technologies
+# APIs and Technologies
 
 - Node `v22.x`
 - GoldSrc Engine
@@ -17,14 +17,14 @@ Additional game configuration files and maps are also provided by this repositor
   - [SourceMod](https://www.sourcemod.net/) `v1.12.0`
   - [Metamod Source](https://www.sourcemm.net/) `v1.12.0`
 
-## Getting Started
+# Getting Started
 
 ```bash
 npm install
 npx tsx cli/compiler.mts
 ```
 
-## VSCode Extension
+# VSCode Extension
 
 Install the recommended workspace extension and configure the SourceMod extension paths.
 
