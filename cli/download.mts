@@ -16,8 +16,8 @@ import { Command } from "commander";
 
 /** @enum */
 enum Endpoint {
-  AMXX = "https://www.amxmodx.org/release/amxmodx-1.8.2-base-windows.zip",
-  AMXX_CSTRIKE = "https://www.amxmodx.org/release/amxmodx-1.8.2-cstrike-windows.zip",
+  AMXX = "https://www.amxmodx.org/amxxdrop/1.9/amxmodx-1.9.0-git5294-base-windows.zip",
+  AMXX_CSTRIKE = "https://www.amxmodx.org/amxxdrop/1.9/amxmodx-1.9.0-git5294-cstrike-windows.zip",
   METAMOD = "https://www.amxmodx.org/release/metamod-1.21.1-am.zip",
   METAMOD_SOURCE = "https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1217-windows.zip",
   SOURCEMOD = "https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7193-windows.zip",
