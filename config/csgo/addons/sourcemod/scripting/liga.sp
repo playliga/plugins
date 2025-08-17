@@ -58,8 +58,8 @@ public Plugin myinfo = {
   name        = "LIGA Esports Manager",
   author      = "LIGA Esports Manager",
   description = "LIGA Esports Manager",
-  version     = "1.0.2",
-  url         = "https://lemonpole.github.io/liga-public/"
+  version     = "1.0.3",
+  url         = "https://playliga.gg"
 }
 
 /**
@@ -370,27 +370,29 @@ public Action Hook_CSS_Force_Team(UserMsg msgId, Protobuf msg, const int[] playe
  * Check if log falls within the events we are tracking
  * such as player killed or round over events.
  *
- * If so, we intercept the log message and append the
- * half number the match is currently in.
+ * If not live then we intercept the log message
+ * and prevent it from printing to the console.
  *
  * @param message Message that is being logged.
  */
 public Action Hook_Log(char[] message) {
+  // check if we're live and bail if not
   bool intercept = (
     StrContains(message, "killed") != -1 ||
     StrContains(message, "triggered") != -1 ||
     StrContains(message, "assisted") != -1
   );
 
-  if(gameEngine == Engine_CSGO && intercept) {
-    // don't print anything if we're not live
-    if(GameRules_GetProp("m_bWarmupPeriod") == 1) {
+  if(
+    gameEngine == Engine_CSGO &&
+    intercept &&
+    GameRules_GetProp("m_bWarmupPeriod") == 1
+  ) {
       return Plugin_Handled;
-    }
+  }
 
-    TrimString(message);
-    LogToGame("%s Half: \"%d\"", message, rounds > cvars[MAX_ROUNDS].IntValue / 2);
-    return Plugin_Handled;
+  if(gameEngine == Engine_CSS && intercept && !live) {
+      return Plugin_Handled;
   }
 
   // intercept the game over event to give time
@@ -404,17 +406,7 @@ public Action Hook_Log(char[] message) {
     return Plugin_Handled;
   }
 
-  if(gameEngine == Engine_CSS && intercept) {
-    // don't print anything if we're not live
-    if(!live) {
-      return Plugin_Handled;
-    }
-
-    TrimString(message);
-    LogToGame("%s Half: \"%d\"", message, halfTime);
-    return Plugin_Handled;
-  }
-
+  // otherwise we let the log message go
   return Plugin_Continue;
 }
 

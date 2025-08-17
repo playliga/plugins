@@ -8,7 +8,7 @@
 
 // constants
 #define PLUGIN_NAME                     "LIGA Esports Manager"
-#define PLUGIN_VERSION                  "1.0.2"
+#define PLUGIN_VERSION                  "1.0.3"
 #define PLUGIN_AUTHOR                   "LIGA Esports Manager"
 #define DELAY_FORCE_TEAM                1
 #define DELAY_HALF_TIME                 1
@@ -91,15 +91,12 @@ public plugin_log() {
   // check if log falls within the events we are tracking
   // such as player killed or round over events.
   //
-  // if so, we intercept the log message and append the
-  // half number the match is currently in
-  if(containi(g_buffer, "killed") != -1 || containi(g_buffer, "triggered")) {
-    // don't print anything if we're not live
-    if(!g_live) {
-      return PLUGIN_HANDLED;
-    }
-
-    log_message("%s Half: ^"%d^"", g_buffer, g_half_time);
+  // if not live then we intercept the log message
+  // and prevent it from printing to the console
+  if(
+    !g_live &&
+    (containi(g_buffer, "killed") != -1 || containi(g_buffer, "triggered"))
+  ) {
     return PLUGIN_HANDLED;
   }
 
