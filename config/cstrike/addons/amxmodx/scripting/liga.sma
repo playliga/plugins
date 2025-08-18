@@ -36,7 +36,6 @@
 #define MENU_TEAM_SELECT_VGUI           2
 #define MENU_TEAM_SELECT_VGUI_CT        27
 #define MENU_TEAM_SELECT_VGUI_T         26
-#define OVERTIME_MAX_ROUNDS             6
 #define TEAM_T                          0
 #define TEAM_CT                         1
 #define TIMER_WELCOME_MESSAGE_ID        1337
@@ -46,6 +45,7 @@ enum cvars {
   DELAY_GAME_OVER,
   MAX_ROUNDS,
   OVERTIME_ENABLE,
+  OVERTIME_MAX_ROUNDS,
   SPECTATING,
   TEAM_NAME_T,
   TEAM_NAME_CT,
@@ -77,6 +77,7 @@ public plugin_init() {
   g_cvars[DELAY_GAME_OVER] = register_cvar("liga_gameover_delay", "5");
   g_cvars[MAX_ROUNDS] = register_cvar("liga_max_rounds", "30");
   g_cvars[OVERTIME_ENABLE] = register_cvar("liga_overtime_enable", "0");
+  g_cvars[OVERTIME_MAX_ROUNDS] = register_cvar("liga_overtime_max_rounds", "6");
   g_cvars[SPECTATING] = register_cvar("liga_spectating", "0");
   g_cvars[TEAM_NAME_T] = register_cvar("liga_teamname_t", "Terrorists");
   g_cvars[TEAM_NAME_CT] = register_cvar("liga_teamname_ct", "Counter-Terrorists");
@@ -235,7 +236,7 @@ public event_end_round() {
   new score_ct = get_score(TEAM_CT);
 
   // grab round information
-  new rounds_max = g_over_time ? OVERTIME_MAX_ROUNDS : get_pcvar_num(g_cvars[MAX_ROUNDS]);
+  new rounds_max = g_over_time ? get_pcvar_num(g_cvars[OVERTIME_MAX_ROUNDS]) : get_pcvar_num(g_cvars[MAX_ROUNDS]);
   new rounds_total = get_sum_of_array(g_over_time ? g_over_time_score : g_score, 2);
   new rounds_half_time = rounds_max / 2;
   new rounds_clinch = rounds_max / 2 + 1;

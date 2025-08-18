@@ -21,7 +21,6 @@ const int     LO3_PRINT_NUM                         = 4;
 char          MENU_TEAM_SELECT[]                    = "specgui";
 char          MENU_TEAM_SELECT_CT[]                 = "class_ct";
 char          MENU_TEAM_SELECT_T []                 = "class_ter";
-const int     OVERTIME_MAX_ROUNDS                   = 6;
 const int     TEAM_T                                = 0;
 const int     TEAM_CT                               = 1;
 
@@ -30,6 +29,7 @@ enum Cvars {
   DELAY_GAME_OVER,
   MAX_ROUNDS,
   OVERTIME_ENABLE,
+  OVERTIME_MAX_ROUNDS,
   SPECTATING,
   TEAM_NAME_T,
   TEAM_NAME_CT,
@@ -82,6 +82,7 @@ public void OnPluginStart() {
   if(gameEngine == Engine_CSS) {
     cvars[MAX_ROUNDS] = CreateConVar("liga_max_rounds", "30");
     cvars[OVERTIME_ENABLE] = CreateConVar("liga_overtime_enable", "0");
+    cvars[OVERTIME_MAX_ROUNDS] = CreateConVar("liga_overtime_max_rounds", "6");
     cvars[TEAM_NAME_T] = CreateConVar("liga_teamname_t", "Terrorists");
     cvars[TEAM_NAME_CT] = CreateConVar("liga_teamname_ct", "Terrorists");
 
@@ -234,7 +235,7 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
   int scoreCTs = getScore(TEAM_CT);
 
   // grab round information
-  int roundsMax = overTime ? OVERTIME_MAX_ROUNDS : cvars[MAX_ROUNDS].IntValue;
+  int roundsMax = overTime ? cvars[OVERTIME_MAX_ROUNDS].IntValue : cvars[MAX_ROUNDS].IntValue;
   int roundsTotal = getArraySum(overTime ? scoreOverTime : score, sizeof(score));
   int roundsHalfTime = roundsMax / 2;
   int roundsClinch = roundsMax / 2 + 1;
