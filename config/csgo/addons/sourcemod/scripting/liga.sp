@@ -40,7 +40,6 @@ ConVar cvars[Cvars];
 bool          live, halfTime, overTime              = false;
 bool          welcomed                              = false;
 char          buffer[BUFFER_SIZE_MAX + 1]           = "";
-char          gameOverMessage[BUFFER_SIZE_MAX + 1]  = "";
 char          hostname[BUFFER_SIZE_SM + 1]          = "";
 char          modelsTs[][]                          = {"models/player/t_guerilla.mdl", "models/player/t_leet.mdl", "models/player/t_phoenix.mdl"};
 char          modelsCTs[][]                         = {"models/player/ct_gign.mdl", "models/player/ct_gsg9.mdl", "models/player/ct_sas.mdl"};
@@ -396,17 +395,6 @@ public Action Hook_Log(char[] message) {
       return Plugin_Handled;
   }
 
-  // intercept the game over event to give time
-  // for the app to properly close the game
-  if(
-    gameEngine == Engine_CSGO &&
-    StrEqual(gameOverMessage, "") &&
-    StrContains(message, "game over: competitive", false) != -1
-  ) {
-    Format(gameOverMessage, sizeof(gameOverMessage), message);
-    return Plugin_Handled;
-  }
-
   // otherwise we let the log message go
   return Plugin_Continue;
 }
@@ -506,10 +494,6 @@ public Action Timer_HalfTime(Handle timer) {
  * @param timer The timer handler.
  */
 public Action Timer_GameOver(Handle timer) {
-  if(gameEngine == Engine_CSGO) {
-    LogToGame(gameOverMessage);
-  }
-
   if(gameEngine == Engine_CSS) {
     GetCurrentMap(buffer, BUFFER_SIZE_MAX);
     LogToGame("Game Over: competitive  %s score %d:%d", buffer, score[TEAM_T], score[TEAM_CT]);
