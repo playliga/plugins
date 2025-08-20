@@ -220,8 +220,25 @@ public Action CS_OnTerminateRound(float &delay, CSRoundEndReason &reason) {
     }
   }
 
-  // invert score if past half-time
-  if(halfTime) {
+  // invert score if past half-time or in overtime
+  //
+  // in overtime, it gets a bit tricky because sides
+  // are not switched at the start of each half
+  bool invert = halfTime;
+
+  if(overTime) {
+    int roundsTotalAll = getArraySum(score, sizeof(score));
+    int roundsTotalOverTime = roundsTotalAll - cvars[MAX_ROUNDS].IntValue;
+    int overTimeNum = roundsTotalOverTime / cvars[OVERTIME_MAX_ROUNDS].IntValue;
+    int overTimePeriod = overTimeNum + 1; // increment to 1-based
+
+    // only swap on 1st-half of odd-numbered overtimes
+    if(overTimePeriod % 2 == 1) {
+        invert = !halfTime;
+    }
+  }
+
+  if(invert) {
     score[1 - winner]++;
     scoreOverTime[1 - winner] += overTime ? 1 : 0;
   } else {
@@ -476,15 +493,22 @@ public Action Timer_LO3(Handle timer) {
 }
 
 /**
- * Handles the half-time event by
- * executing the half-time config.
+ * Handles the half-time event by executing the
+ * appropriate half-time or overtime config.
  *
  * @param timer The timer handler.
  */
 public Action Timer_HalfTime(Handle timer) {
   live = false;
   halfTime = !halfTime;
-  ServerCommand("exec liga-halftime.cfg");
+
+  // in first half of overtime we do not switch sides
+  if(overTime && !halfTime) {
+    ServerCommand("exec liga-overtime.cfg");
+  } else {
+    ServerCommand("exec liga-halftime.cfg");
+  }
+
   return Plugin_Continue;
 }
 

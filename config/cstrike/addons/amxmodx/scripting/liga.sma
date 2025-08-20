@@ -222,8 +222,25 @@ public event_end_round() {
     winner = TEAM_CT;
   }
 
-  // invert score if past half-time
-  if(g_half_time) {
+  // invert score if past half-time or in overtime
+  //
+  // in overtime, it gets a bit tricky because sides
+  // are not switched at the start of each half
+  new invert = g_half_time;
+
+  if(g_over_time) {
+    new rounds_total_all = get_sum_of_array(g_score, 2);
+    new rounds_total_over_time = rounds_total_all - get_pcvar_num(g_cvars[MAX_ROUNDS]);
+    new over_time_num = rounds_total_over_time / get_pcvar_num(g_cvars[OVERTIME_MAX_ROUNDS]);
+    new over_time_period = over_time_num + 1; // increment to 1-based
+
+    // only swap on 1st-half of odd-numbered overtimes
+    if(over_time_period % 2 == 1) {
+        invert = g_half_time ? 0 : 1;
+    }
+  }
+
+  if(invert) {
     g_score[1 - winner]++;
     g_over_time_score[1 - winner] += g_over_time ? 1 : 0;
   } else {
@@ -358,13 +375,19 @@ public task_force_team(player_id) {
 }
 
 /**
- * Handles the half-time event by
- * executing the half-time config.
+ * Handles the half-time event by executing the
+ * appropriate half-time or overtime config.
  */
 public task_half_time() {
   g_live = false;
   g_half_time = !g_half_time;
-  server_cmd("exec liga-halftime.cfg");
+
+  // in first half of overtime we do not switch sides
+  if(g_over_time && !g_half_time) {
+    server_cmd("exec liga-overtime.cfg");
+  } else {
+    server_cmd("exec liga-halftime.cfg");
+  }
 }
 
 /**
