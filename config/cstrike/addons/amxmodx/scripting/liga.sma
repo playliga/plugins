@@ -2,14 +2,16 @@
  * A match plugin.
  */
 #include <amxmodx>
+#include <engine>
 
 // set compiler options
 #pragma semicolon                       1
 
 // constants
 #define PLUGIN_NAME                     "LIGA Esports Manager"
-#define PLUGIN_VERSION                  "1.0.3"
+#define PLUGIN_VERSION                  "1.0.4"
 #define PLUGIN_AUTHOR                   "LIGA Esports Manager"
+#define DELAY_FORCE_BOMB                0.1
 #define DELAY_FORCE_TEAM                1
 #define DELAY_HALF_TIME                 1
 #define DELAY_WELCOME_MESSAGE           5
@@ -69,8 +71,11 @@ public plugin_init() {
   register_clcmd("say .ready", "command_ready", 0, "- Starts the match.");
   register_clcmd("say .score", "command_score", 0, "- Shows the score.");
   register_concmd("liga_announce", "command_announce", 0, "<message> - Announces a message to all players.");
+
+  register_event("ResetHUD", "event_player_spawn", "b");
   register_event("SendAudio", "event_end_round", "a", "2=%!MRAD_terwin", "2=%!MRAD_ctwin", "2=%!MRAD_rounddraw");
   register_event("TeamInfo", "event_join_team", "a");
+
   register_message(get_user_msgid("ShowMenu"), "message_force_team");
   register_message(get_user_msgid("VGUIMenu"), "message_force_team_vgui");
 
@@ -319,6 +324,20 @@ public event_join_team() {
 }
 
 /**
+ * Triggered on player spawn.
+ *
+ * @param id The id of the player.
+ */
+public event_player_spawn(id) {
+    if(!is_user_alive(id) || !is_user_bot(id)) {
+        return PLUGIN_CONTINUE;
+    }
+
+    set_task(DELAY_FORCE_BOMB, "task_force_bomb", id);
+    return PLUGIN_CONTINUE;
+}
+
+/**
  * Hides the team and class select menus
  * since the user team is enforced.
  */
@@ -360,6 +379,58 @@ public message_force_team_vgui(msg_id, msg_dest, player_id) {
   // block the team menu from showing
   force_team_check(player_id);
   return PLUGIN_HANDLED;
+}
+
+/**
+ * Assigns the bomb to the player.
+ *
+ * @param player_id The id of the player with the bomb.
+ */
+public task_force_bomb(player_id) {
+  // bail if player is not a bot or lacks the bomb
+  if(!is_user_bot(player_id) || !user_has_weapon(player_id, 6)) {
+    return;
+  }
+
+  // find human to give the bomb to
+  new human_id;
+
+  for(new id = 1; id <= MAX_PLAYERS; id++) {
+    if(
+        is_user_bot(id) ||
+        id == player_id ||
+        !is_user_alive(id) ||
+        get_user_team(id) != get_user_team(player_id)
+    ) {
+        continue;
+    }
+
+    human_id = id;
+    break;
+  }
+
+  if(!human_id) {
+    return;
+  }
+
+  // force bomb drop
+  engclient_cmd(player_id, "drop", "weapon_c4");
+
+  // iterate through dropped items (weaponbox) to find the bomb
+  // and move the bomb to the human player's position
+  new ent = -1;
+
+  while((ent = find_ent_by_class(ent, "weaponbox"))) {
+    if(find_ent_by_owner(-1, "weapon_c4", ent) <= 0) {
+        continue;
+    }
+
+    new Float:vec[3];
+    entity_get_vector(human_id, EV_VEC_origin, vec);
+    entity_set_vector(ent, EV_VEC_velocity, Float:{0.0, 0.0, 0.0});
+    entity_set_vector(ent, EV_VEC_origin, vec);
+    break;
+  }
 }
 
 /**

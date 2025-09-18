@@ -11,6 +11,7 @@
 // constants
 const int     BUFFER_SIZE_SM                        = 63;
 const int     BUFFER_SIZE_MAX                       = 2047;
+const float   DELAY_FORCE_BOMB                      = 0.1;
 const int     DELAY_FORCE_TEAM                      = 1;
 const int     DELAY_HALF_TIME                       = 1;
 const int     DELAY_WELCOME_MESSAGE                 = 5;
@@ -57,7 +58,7 @@ public Plugin myinfo = {
   name        = "LIGA Esports Manager",
   author      = "LIGA Esports Manager",
   description = "LIGA Esports Manager",
-  version     = "1.0.3",
+  version     = "1.0.4",
   url         = "https://playliga.gg"
 }
 
@@ -92,6 +93,7 @@ public void OnPluginStart() {
     // tidy the chat area by silencing these events
     HookEvent("player_connect_client", Event_CSS_TidyChat, EventHookMode_Pre);
     HookEvent("player_disconnect", Event_CSS_TidyChat, EventHookMode_Pre);
+    HookEvent("player_spawn", Event_CSS_PlayerSpawn);
     HookEvent("player_team", Event_CSS_TidyChat, EventHookMode_Pre);
     HookEvent("server_cvar", Event_CSS_TidyChat, EventHookMode_Pre);
 
@@ -336,6 +338,24 @@ public Action Event_CSS_TidyChat(Event event, const char[] name, bool dontBroadc
 }
 
 /**
+ * Triggered on player spawn.
+ *
+ * @param event         The event handle.
+ * @param name          String containing the name of the event.
+ * @param dontBroadcast True if event was not broadcast to clients, false otherwise.
+ */
+public Action Event_CSS_PlayerSpawn(Event event, const char[] name, bool dontBroadcast) {
+  int id = GetClientOfUserId(GetEventInt(event, "userid"));
+
+  if(!IsFakeClient(id) || !IsPlayerAlive(id)) {
+    return Plugin_Continue;
+  }
+
+  CreateTimer(DELAY_FORCE_BOMB, Timer_ForceBomb, id);
+  return Plugin_Continue;
+}
+
+/**
  * Triggered when the player joins a team.
  *
  * @param event         The event handle.
@@ -445,6 +465,42 @@ public void OnMapStart() {
       PrecacheModel(modelsCTs[i], true);
     }
   }
+}
+
+/**
+ * Assigns the bomb to the player.
+ *
+ * @param timer The timer handler.
+ * @param id The index of the player.
+ */
+public Action Timer_ForceBomb(Handle timer, int id) {
+  // bail if player is not a bot or lacks the bomb
+  int bombEnt = GetPlayerWeaponSlot(id, CS_SLOT_C4);
+
+  if(bombEnt == -1 || !IsFakeClient(id)) {
+    return Plugin_Handled;
+  }
+
+  // find human to give bomb to
+  int humanId;
+
+  for(int i = 1; i <= MaxClients; i++) {
+    if(IsFakeClient(i) || i == id || !IsPlayerAlive(i) || GetClientTeam(i) != GetClientTeam(id)) {
+        continue;
+    }
+
+    humanId = i;
+    break;
+  }
+
+  if(!humanId) {
+    return Plugin_Handled;
+  }
+
+  // strip bomb from bot and give to human
+  RemovePlayerItem(id, bombEnt);
+  GivePlayerItem(humanId, "weapon_c4");
+  return Plugin_Handled;
 }
 
 /**
