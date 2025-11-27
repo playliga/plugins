@@ -1,0 +1,87 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    // build amxx and sourcemod plugins
+    {
+      "args": [
+        "-igenerated/cstrike/addons/amxmodx/scripting/include",
+        "-oconfig/cstrike/addons/amxmodx/plugins/liga.amxx",
+        "config/cstrike/addons/amxmodx/scripting/liga.sma"
+      ],
+      "command": "generated/cstrike/addons/amxmodx/scripting/amxxpc.exe",
+      "label": "build:amxx:cstrike",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "args": [
+        "-igenerated/csgo/addons/sourcemod/scripting/include",
+        "-oconfig/csgo/addons/sourcemod/plugins/liga.smx",
+        "config/csgo/addons/sourcemod/scripting/liga.sp"
+      ],
+      "command": "generated/csgo/addons/sourcemod/scripting/spcomp.exe",
+      "label": "build:sourcemod:csgo",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+
+    // copy plugins to czero and css
+    {
+      "command": "cp config/cstrike/addons/amxmodx/plugins/liga.amxx config/czero/addons/amxmodx/plugins/liga.amxx",
+      "dependsOn": "build:amxx:cstrike",
+      "label": "build:amxx:czero",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "command": "cp config/csgo/addons/sourcemod/plugins/liga.smx config/cssource/addons/sourcemod/plugins/liga.smx",
+      "dependsOn": "build:sourcemod:csgo",
+      "label": "build:sourcemod:css",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+
+    // copy to generated folder and stage to appdata
+    {
+      "command": "cp -r config/* generated/",
+      "label": "stage:files",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+    {
+      "command": "cp -r generated/* \"$APPDATA/LIGA Esports Manager/plugins/\"",
+      "label": "stage:apply",
+      "presentation": {
+        "reveal": "always"
+      },
+      "problemMatcher": [],
+      "type": "shell"
+    },
+
+    // default build task
+    {
+      "dependsOn": ["build:amxx:czero", "build:sourcemod:css", "stage:files", "stage:apply"],
+      "dependsOrder": "sequence",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "label": "all"
+    }
+  ]
+}

@@ -25,8 +25,27 @@
 
 # Getting Started
 
+> [!TIP]
+> In VSCode, press `ctrl+shift+b` to automatically run the script below.
+
 ```bash
-# @todo
+# build amxx and sourcemod plugins
+generated/cstrike/addons/amxmodx/scripting/amxxpc.exe \
+  -igenerated/cstrike/addons/amxmodx/scripting/include \
+  -oconfig/cstrike/addons/amxmodx/plugins/liga.amxx \
+  config/cstrike/addons/amxmodx/scripting/liga.sma
+generated/csgo/addons/sourcemod/scripting/spcomp.exe \
+  -igenerated/csgo/addons/sourcemod/scripting/include \
+  -oconfig/csgo/addons/sourcemod/plugins/liga.smx \
+  config/csgo/addons/sourcemod/scripting/liga.sp
+
+# copy plugins to czero and css folders
+cp config/cstrike/addons/amxmodx/plugins/liga.amxx config/czero/addons/amxmodx/plugins/liga.amxx
+cp config/csgo/addons/sourcemod/plugins/liga.smx config/cssource/addons/sourcemod/plugins/liga.smx
+
+#  copy to generated folder and stage to appdata
+cp -r config/* generated/
+cp -r generated/* "$APPDATA/LIGA Esports Manager/plugins/"
 ```
 
 # VSCode Extension
