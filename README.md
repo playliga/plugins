@@ -21,7 +21,7 @@
 # Prerequisites
 
 1. Create a `generated` folder in the root of the project.
-2. Download AMX Mod X or SourceMod and their respective dependencies.
+2. Download AMX Mod X and Metamod and extract their contents into the `generated` folder.
 
 # Getting Started
 
