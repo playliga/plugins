@@ -10,7 +10,6 @@
 
 # APIs and Technologies
 
-- Node `v22.x`
 - GoldSrc Engine
   - [AMX Mod X](https://www.amxmodx.org/) `v1.9.0` build `5294`
   - [Metamod](http://metamod.org/) `v1.21.1-am`
@@ -19,11 +18,15 @@
   - [SourceMod](https://www.sourcemod.net/) `v1.12.0`
   - [Metamod Source](https://www.sourcemm.net/) `v1.12.0`
 
+# Prerequisites
+
+1. Create a `generated` folder in the root of the project.
+2. Download AMX Mod X or SourceMod and their respective dependencies.
+
 # Getting Started
 
 ```bash
-npm install
-npx tsx cli/compiler.mts
+# @todo
 ```
 
 # VSCode Extension

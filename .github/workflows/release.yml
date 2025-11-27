@@ -8,18 +8,76 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  download:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        file:
+          - url: https://www.amxmodx.org/release/metamod-1.21.1-am.zip
+            name: metamod
+          - url: https://www.amxmodx.org/amxxdrop/1.9/amxmodx-1.9.0-git5294-base-windows.zip
+            name: amxx_base
+          - url: https://www.amxmodx.org/amxxdrop/1.9/amxmodx-1.9.0-git5294-cstrike-windows.zip
+            name: amxx_cstrike
+          - url: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1217-windows.zip
+            name: metamod_source
+          - url: https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7193-windows.zip
+            name: sourcemod
+    steps:
+      - run: >
+          curl ${{ matrix.file.url }}
+          --create-dirs
+          --output downloads/${{ matrix.file.name }}.zip
+          --show-error
+          --silent
+      - uses: actions/upload-artifact@v4
+        with:
+          name: downloads-${{ matrix.file.name }}
+          path: downloads
+  extract:
+    runs-on: ubuntu-latest
+    needs: download
+    strategy:
+      matrix:
+        group:
+          - folder: cstrike
+            zips: [metamod, amxx_base, amxx_cstrike]
+          - folder: czero
+            zips: [metamod, amxx_base, amxx_cstrike]
+          - folder: cssource
+            zips: [metamod_source, sourcemod]
+          - folder: csgo
+            zips: [metamod_source, sourcemod]
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: downloads-*
+          path: downloads
+          merge-multiple: true
+      - run: mkdir -p generated/${{ matrix.group.folder }}
+      - run: |
+          for zip in "${{ join(matrix.group.zips, '" "') }}"; do
+            echo "unzipping downloads/$zip.zip into generated/${{ matrix.group.folder }}"
+            unzip -qqo "downloads/$zip.zip" -d "generated/${{ matrix.group.folder }}"
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: generated-${{ matrix.group.folder }}
+          path: generated
   build:
     runs-on: ubuntu-latest
+    needs: extract
     env:
       CS2_SHARP: cs2sharp
       CSGO_BETTER_BOTS: csgo-better-bots
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/download-artifact@v4
         with:
-          node-version-file: .nvmrc
-      - run: npm ci
+          pattern: generated-*
+          path: generated
+          merge-multiple: true
       - run: >
           gh release download
           --repo ${{ github.repository_owner }}/${{ env.CSGO_BETTER_BOTS }}
@@ -33,9 +91,10 @@ jobs:
       - run: cp -r ${{ env.CSGO_BETTER_BOTS }}/* config/csgo/
       - run: cp -r ${{ env.CS2_SHARP }}/* config/cs2/
       - run: echo "REPO_NAME=$(basename ${{ github.repository }})" >> $GITHUB_ENV
+      - run: echo "VERSION=$(grep 'PLUGIN_VERSION' config/cstrike/addons/amxmodx/scripting/liga.sma | sed -E 's/.*"([^"]+)".*/\1/' | head -n1)" >> $GITHUB_ENV
       - run: mkdir $REPO_NAME && cp -r generated/* $REPO_NAME/ && cp -r config/* $REPO_NAME/
-      - run: zip -rq $REPO_NAME-$(cat package.json | jq -r '.version').zip $REPO_NAME/
+      - run: zip -rq $REPO_NAME-$VERSION.zip $REPO_NAME/
       - id: create_release
-        run: gh release create $(cat package.json | jq -r '.version') --title "$(cat package.json | jq -r '.version')" --latest
+        run: gh release create $VERSION --title "$VERSION" --latest
       - if: success() && steps.create_release.outcome == 'success'
-        run: gh release upload $(cat package.json | jq -r '.version') $REPO_NAME-*.zip --clobber
+        run: gh release upload $VERSION $REPO_NAME-*.zip --clobber
