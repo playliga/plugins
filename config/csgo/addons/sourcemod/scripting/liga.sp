@@ -58,7 +58,7 @@ public Plugin myinfo = {
   name        = "LIGA Esports Manager",
   author      = "LIGA Esports Manager",
   description = "LIGA Esports Manager",
-  version     = "2.9.3",
+  version     = "2.9.4",
   url         = "https://playliga.gg"
 }
 
