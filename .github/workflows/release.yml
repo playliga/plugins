@@ -26,6 +26,7 @@ jobs:
     steps:
       - run: >
           curl ${{ matrix.file.url }}
+          --location
           --create-dirs
           --output downloads/${{ matrix.file.name }}.zip
           --show-error
