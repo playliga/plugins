@@ -21,7 +21,7 @@ jobs:
             name: amxx_cstrike
           - url: https://mms.alliedmods.net/mmsdrop/1.12/mmsource-1.12.0-git1217-windows.zip
             name: metamod_source
-          - url: https://sm.alliedmods.net/smdrop/1.12/sourcemod-1.12.0-git7193-windows.zip
+          - url: https://github.com/alliedmodders/sourcemod/releases/download/1.12.0.7251/sourcemod-1.12.0-git7251-windows.zip
             name: sourcemod
     steps:
       - run: >
