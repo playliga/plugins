@@ -9,7 +9,7 @@
 
 // constants
 #define PLUGIN_NAME                     "LIGA Esports Manager"
-#define PLUGIN_VERSION                  "2.9.9"
+#define PLUGIN_VERSION                  "2.9.10"
 #define PLUGIN_AUTHOR                   "LIGA Esports Manager"
 #define DELAY_FORCE_BOMB                0.1
 #define DELAY_FORCE_TEAM                1
